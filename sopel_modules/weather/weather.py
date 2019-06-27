@@ -39,7 +39,7 @@ def check(bot, trigger):
         msg = 'You must provide a query.'
     return msg
 
-@sopel.module.commands('wz')
+@sopel.module.commands('wz', 'wx')
 @sopel.module.example('.wz 90210')
 @sopel.module.example('.wz Los Vegas, NV')
 def weatherbot_current(bot, trigger):
@@ -54,7 +54,7 @@ def weatherbot_current(bot, trigger):
       msg = wz.get(trigger.group(2))
   bot.say(msg)
 
-@sopel.module.commands('wzf')
+@sopel.module.commands('wzf', 'wxf')
 @sopel.module.example('.wzf 90210')
 @sopel.module.example('.wzf Los Vegas, NV')
 def weatherbot_forecast(bot, trigger):
