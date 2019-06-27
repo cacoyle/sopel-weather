@@ -15,6 +15,8 @@ Weather module for sopel.
 
 ## Usage
 * `.wz  <zip code>`
-* `.wz  <City, State>, <City, State, Country>`
+* `.wz  <City, State>`
+* `.wz  <City, State, Country>`
 * `.wzf <zip code>`
-* `.wzf <City, State>, <City, State, Country>`
+* `.wzf <City, State>`
+* `.wzf <City, State, Country>`
