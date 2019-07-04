@@ -1,7 +1,7 @@
 import re
 
-us = re.compile("^\\d{5}(-{0,1}\\d{4})?$")
-ca = re.compile("([ABCEGHJKLMNPRSTVXY]\d)([ABCEGHJKLMNPRSTVWXYZ]\d){2}", re.IGNORECASE)
+us = re.compile(r"^\d{5}(-{0,1}\d{4})?$")
+ca = re.compile(r"([ABCEGHJKLMNPRSTVXY]\d)([ABCEGHJKLMNPRSTVWXYZ]\d){2}", re.IGNORECASE)
 
 def unix_to_localtime(t, tz="US/Eastern", fmt="%H:%M:%S"):
     """
@@ -25,8 +25,8 @@ def postal_code(string):
     """
 
     if us.match(string):
-        return "USA";
+        return "USA"
     elif ca.match(string):
-        return "CAN";
+        return "CAN"
     else:
         return None

@@ -43,28 +43,30 @@ def check(bot, trigger):
 @sopel.module.example('.wz 90210')
 @sopel.module.example('.wz Los Vegas, NV')
 def weatherbot_current(bot, trigger):
-  msg = check(bot, trigger)
-  if not msg:
-      wz = WZ(
-              bot.config.weather.here_url,
-              bot.config.weather.here_app_id,
-              bot.config.weather.here_app_code,
-              bot.config.weather.darksky_url,
-              bot.config.weather.darksky_key)
-      msg = wz.get(trigger.group(2))
-  bot.say(msg)
+    msg = check(bot, trigger)
+    if not msg:
+        wz = WZ(
+            bot.config.weather.here_url,
+            bot.config.weather.here_app_id,
+            bot.config.weather.here_app_code,
+            bot.config.weather.darksky_url,
+            bot.config.weather.darksky_key
+        )
+        msg = wz.get(trigger.group(2))
+    bot.say(msg)
 
 @sopel.module.commands('wzf', 'wxf')
 @sopel.module.example('.wzf 90210')
 @sopel.module.example('.wzf Los Vegas, NV')
 def weatherbot_forecast(bot, trigger):
-  msg = check(bot, trigger)
-  if not msg:
-      wz = WZ(
-              bot.config.weather.here_url,
-              bot.config.weather.here_app_id,
-              bot.config.weather.here_app_code,
-              bot.config.weather.darksky_url,
-              bot.config.weather.darksky_key)
-      msg = wz.get(trigger.group(2), forecast=True)
-  bot.say(msg)
+    msg = check(bot, trigger)
+    if not msg:
+        wz = WZ(
+            bot.config.weather.here_url,
+            bot.config.weather.here_app_id,
+            bot.config.weather.here_app_code,
+            bot.config.weather.darksky_url,
+            bot.config.weather.darksky_key
+        )
+        msg = wz.get(trigger.group(2), forecast=True)
+    bot.say(msg)
