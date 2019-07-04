@@ -18,9 +18,9 @@ class WZ:
 
     def _get(self, text):
 
-        location  = self.here.location(text)
+        location = self.here.location(text)
 
-        gps_loc  = location["Location"]["NavigationPosition"][-1]
+        gps_loc = location["Location"]["NavigationPosition"][-1]
         city = location["Location"]["Address"]["City"]
         state = location["Location"]["Address"]["State"]
 
