@@ -50,12 +50,13 @@ class WZ:
 
             result = (
                 f"{city}, {state} Conditions: {current['summary']} | "
-                f"Temp: {current['temperature']} | "
+                f"Temp: {current['temperature']}, Feels-Like: {current['apparentTemperature']} | "
+                f"UV Index: {current['uvIndex']} | "
                 f"High: {forecast_data[0]['temperatureHigh']}, Low: {forecast_data[0]['temperatureLow']} | "
                 f"Humidity: {current['humidity']*100:.2f}% | "
                 f"Sunrise: {utils.unix_to_localtime(forecast_data[0]['sunriseTime'])}, "
                 f"Sunset: {utils.unix_to_localtime(forecast_data[0]['sunsetTime'])} | "
-                f"Today's forecast_data: {forecast_data[0]['summary']}"
+                f"Today's Forecast: {forecast_data[0]['summary']}"
             )
 
         return(result)

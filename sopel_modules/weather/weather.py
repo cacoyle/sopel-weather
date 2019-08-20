@@ -77,6 +77,7 @@ def weatherbot_forecast(bot, trigger):
             bot.config.weather.darksky_url,
             bot.config.weather.darksky_key
         )
+
         if not trigger.group(2):
             addr = socket.gethostbyname(trigger.host.strip())
             geozip = geoip_lookup(addr)
