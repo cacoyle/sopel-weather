@@ -67,6 +67,7 @@ def weatherbot_current(bot, trigger):
 @sopel.module.example('.wzf 90210')
 @sopel.module.example('.wzf Los Vegas, NV')
 def weatherbot_forecast(bot, trigger):
+    import pdb
     msg = check(bot, trigger)
     if not msg:
         wz = WZ(
@@ -76,7 +77,7 @@ def weatherbot_forecast(bot, trigger):
             bot.config.weather.darksky_url,
             bot.config.weather.darksky_key
         )
-        print(">>> %s <<<<" % trigger.group(2))
+
         if not trigger.group(2):
             addr = socket.gethostbyname(trigger.host.strip())
             geozip = geoip_lookup(addr)
