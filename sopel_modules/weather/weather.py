@@ -2,8 +2,10 @@ from sopel.config.types import StaticSection, ChoiceAttribute, ValidatedAttribut
 from sopel.module import commands, example
 from sopel import web
 from .wz import WZ
+from .utils import geoip_lookup
 
 import sopel.module
+import socket
 
 class WeatherSection(StaticSection):
     here_url = ValidatedAttribute('here_url', default="https://geocoder.api.here.com/6.2/geocode.json")
@@ -35,8 +37,6 @@ def check(bot, trigger):
         msg = 'Weather API darksky.com url not configured.'
     elif not bot.config.weather.darksky_key:
         msg = 'Weather API darksky.com key not configured.'
-    elif not trigger.group(2):
-        msg = 'You must provide a query.'
     return msg
 
 @sopel.module.commands('wz', 'wx')
@@ -52,7 +52,15 @@ def weatherbot_current(bot, trigger):
             bot.config.weather.darksky_url,
             bot.config.weather.darksky_key
         )
-        msg = wz.get(trigger.group(2))
+        if not trigger.group(2):
+            addr = socket.gethostbyname(trigger.host.strip())
+            geozip = geoip_lookup(addr)
+            if geozip.postal.code:
+                msg = wz.get(geozip.postal.code, forecast=False)
+            else:
+                msg = f"Sorry {trigger.nick}, I can't figure out where you are"
+        else:
+            msg = wz.get(trigger.group(2))
     bot.say(msg)
 
 @sopel.module.commands('wzf', 'wxf')
@@ -68,5 +76,14 @@ def weatherbot_forecast(bot, trigger):
             bot.config.weather.darksky_url,
             bot.config.weather.darksky_key
         )
-        msg = wz.get(trigger.group(2), forecast=True)
+        print(">>> %s <<<<" % trigger.group(2))
+        if not trigger.group(2):
+            addr = socket.gethostbyname(trigger.host.strip())
+            geozip = geoip_lookup(addr)
+            if geozip.postal.code:
+                msg = wz.get(geozip.postal.code, forecast=True)
+            else:
+                msg = f"Sorry {trigger.nick}, I can't figure out where you are"
+        else:
+            msg = wz.get(trigger.group(2), forecast=True)
     bot.say(msg)

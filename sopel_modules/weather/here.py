@@ -29,6 +29,7 @@ class Here:
         return(results)
 
     def location(self, search_string):
+        print(f"*** {search_string} ***")
         from . import utils
 
         results = []
