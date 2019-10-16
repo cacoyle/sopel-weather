@@ -42,10 +42,12 @@ class WZ:
 
         if forecast:
             result = f"{city}, {state} Conditions: {current['summary']} | "
-            for i in range(0, days):
-                result += f"\002{utils.unix_to_localtime(forecast_data[i]['time'], fmt='%a')}\002 "
-                result += f"{forecast_data[i]['temperatureHigh']}({forecast_data[i]['apparentTemperatureHigh']})/{forecast_data[i]['temperatureLow']}({forecast_data[i]['apparentTemperatureLow']}) "
-                result += f"{forecast_data[i]['summary']} | "
+            def f(i):
+                r = f"\002{utils.unix_to_localtime(forecast_data[i]['time'], fmt='%a')}\002 "
+                r += f"{forecast_data[i]['temperatureHigh']}({forecast_data[i]['apparentTemperatureHigh']})/{forecast_data[i]['temperatureLow']}({forecast_data[i]['apparentTemperatureLow']}) "
+                r += f"{forecast_data[i]['summary']}"
+                return r
+            result += ' | '.join([f(x) for x in range(0, days)])
         else:
 
             result = (
