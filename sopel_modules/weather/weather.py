@@ -39,10 +39,7 @@ def check(bot, trigger):
         msg = 'Weather API darksky.com key not configured.'
     return msg
 
-@sopel.module.commands('wz', 'wx')
-@sopel.module.example('.wz 90210')
-@sopel.module.example('.wz Los Vegas, NV')
-def weatherbot_current(bot, trigger):
+def weather(bot, trigger, forecast):
     msg = check(bot, trigger)
     if not msg:
         wz = WZ(
@@ -52,39 +49,42 @@ def weatherbot_current(bot, trigger):
             bot.config.weather.darksky_url,
             bot.config.weather.darksky_key
         )
-        if not trigger.group(2):
+        search = trigger.group(2)
+        if not search:
+            search = bot.db.get_nick_value(trigger.nick, "weather.default")
+
+        if not search:
             addr = socket.gethostbyname(trigger.host.strip())
             geozip = geoip_lookup(addr)
             if geozip.postal.code:
-                msg = wz.get(geozip.postal.code, forecast=False)
+                msg = wz.get(geozip.postal.code, forecast=forecast)
             else:
                 msg = f"Sorry {trigger.nick}, I can't figure out where you are"
         else:
-            msg = wz.get(trigger.group(2))
+            msg = wz.get(search, forecast=forecast)
     bot.say(msg)
+
+@sopel.module.commands('wz', 'wx')
+@sopel.module.example('.wz 90210')
+@sopel.module.example('.wz Los Vegas, NV')
+def weatherbot_current(bot, trigger):
+    weather(bot, trigger, False)
 
 @sopel.module.commands('wzf', 'wxf')
 @sopel.module.example('.wzf 90210')
 @sopel.module.example('.wzf Los Vegas, NV')
 def weatherbot_forecast(bot, trigger):
-    import pdb
+    weather(bot, trigger, True)
+
+@sopel.module.commands('wzd', 'wxd')
+@sopel.module.example('.wzd 90210')
+@sopel.module.example('.wzd Los Vegas, NV')
+def weatherbot_set_default(bot, trigger):
     msg = check(bot, trigger)
     if not msg:
-        wz = WZ(
-            bot.config.weather.here_url,
-            bot.config.weather.here_app_id,
-            bot.config.weather.here_app_code,
-            bot.config.weather.darksky_url,
-            bot.config.weather.darksky_key
-        )
-
-        if not trigger.group(2):
-            addr = socket.gethostbyname(trigger.host.strip())
-            geozip = geoip_lookup(addr)
-            if geozip.postal.code:
-                msg = wz.get(geozip.postal.code, forecast=True)
-            else:
-                msg = f"Sorry {trigger.nick}, I can't figure out where you are"
-        else:
-            msg = wz.get(trigger.group(2), forecast=True)
+      if not trigger.group(2):
+        msg = f"Usage .wzd <default>"
+      else:
+        bot.db.set_nick_value(trigger.nick, "weather.default", trigger.group(2))
+        msg = f"{trigger.nick} default set to {trigger.group(2)}"
     bot.say(msg)
