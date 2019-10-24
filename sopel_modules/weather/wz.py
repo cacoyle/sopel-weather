@@ -1,8 +1,10 @@
 from . import darksky
 from . import here
 from . import utils
+from . import irc
 
 class WZ:
+    UV=[None] + [irc.GREEN] * 2 + [irc.YELLOW] * 3 + [irc.ORANGE] * 2 + [irc.RED] * 3 + [irc.PURPLE]
 
     def __init__(
             self,
@@ -16,22 +18,14 @@ class WZ:
         self.here = here.Here(here_url, here_app_id, here_app_code)
         self.darksky = darksky.DarkSky(darksky_url, darksky_key)
 
+    def __uv_color(self, index):
+        try:
+            return WZ.UV[int(index)]
+        except:
+            return irc.PURPLE
+
     def __uv_rating(self, index):
-        if 1 <= index <= 2:
-            # Green
-            return(f"\x0303{index}\x03")
-        if 3 <= index <= 5:
-            # Yellow
-            return(f"\x0308{index}\x03")
-        if 6 <= index <= 7:
-            # Orange
-            return(f"\x0307{index}\x03")
-        if 8 <= index <= 10:
-            # Red
-            return(f"\x0304{index}\x03")
-        if index > 10:
-            # Purple
-            return(f"\x0306{index}\x03")
+        return f"{irc.COLOR}{self.__uv_color(index)}{index}{irc.COLOR}"
 
     def _get(self, text):
 
@@ -77,7 +71,7 @@ class WZ:
             result = (
                 f"{city}, {state} Conditions: {current['summary']} | "
                 f"Temp: {current['temperature']}, Feels-Like: {current['apparentTemperature']} | "
-                f"UV Index: {self.__uv_rating(current['uvIndex'])} |"
+                f"UV Index: {self.__uv_rating(current['uvIndex'])} | "
                 f"High: {forecast_data[0]['temperatureHigh']}, Low: {forecast_data[0]['temperatureLow']} | "
                 f"Humidity: {current['humidity']*100:.2f}% | "
                 f"Sunrise: {sunrise}, "
