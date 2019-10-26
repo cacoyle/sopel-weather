@@ -39,7 +39,7 @@ def check(bot, trigger):
         msg = 'Weather API darksky.com key not configured.'
     return msg
 
-def weather(bot, trigger, forecast):
+def weather(bot, trigger, **kwargs):
     msg = check(bot, trigger)
     if not msg:
         wz = WZ(
@@ -57,24 +57,31 @@ def weather(bot, trigger, forecast):
             addr = socket.gethostbyname(trigger.host.strip())
             geozip = geoip_lookup(addr)
             if geozip.postal.code:
-                msg = wz.get(geozip.postal.code, forecast=forecast)
+                msg = wz.get(geozip.postal.code, **kwargs)
             else:
                 msg = f"Sorry {trigger.nick}, I can't figure out where you are"
         else:
-            msg = wz.get(search, forecast=forecast)
+            msg = wz.get(search, **kwargs)
     bot.say(msg)
+
 
 @sopel.module.commands('wz', 'wx')
 @sopel.module.example('.wz 90210')
 @sopel.module.example('.wz Los Vegas, NV')
 def weatherbot_current(bot, trigger):
-    weather(bot, trigger, False)
+    weather(bot, trigger, kind="current")
 
 @sopel.module.commands('wzf', 'wxf')
 @sopel.module.example('.wzf 90210')
 @sopel.module.example('.wzf Los Vegas, NV')
 def weatherbot_forecast(bot, trigger):
-    weather(bot, trigger, True)
+    weather(bot, trigger, kind="forecast", days=5)
+
+@sopel.module.commands('wzh', 'wxh')
+@sopel.module.example('.wzh 90210')
+@sopel.module.example('.wzh Los Vegas, NV')
+def weatherbot_hourly(bot, trigger):
+    weather(bot, trigger, kind="hourly", hours=12)
 
 @sopel.module.commands('wzd', 'wxd')
 @sopel.module.example('.wzd 90210')
