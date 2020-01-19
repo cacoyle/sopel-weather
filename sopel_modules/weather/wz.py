@@ -27,6 +27,12 @@ class WZ:
     def __uv_rating(self, index):
         return f"{irc.COLOR}{self.__uv_color(index)}{index}{irc.COLOR}"
 
+    def __high(self):
+        return f"{irc.COLOR}{irc.RED}↑{irc.COLOR}"
+
+    def __low(self):
+        return f"{irc.COLOR}{irc.ROYAL_BLUE}↓{irc.COLOR}"
+
     def _get(self, text):
 
         location = self.here.location(text)
@@ -72,7 +78,7 @@ class WZ:
                 f"{city}, {state} Conditions: {current['summary']} | "
                 f"Temp: {current['temperature']}, Feels-Like: {current['apparentTemperature']} | "
                 f"UV Index: {self.__uv_rating(current['uvIndex'])} | "
-                f"High: {forecast_data[0]['temperatureHigh']}, Low: {forecast_data[0]['temperatureLow']} | "
+                f"{self.__high()}High: {forecast_data[0]['temperatureHigh']}, {self.__low()}Low: {forecast_data[0]['temperatureLow']} | "
                 f"Humidity: {current['humidity']*100:.2f}% | "
                 f"Sunrise: {sunrise}, "
                 f"Sunset: {sunset} | "
