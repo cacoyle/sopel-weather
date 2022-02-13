@@ -27,18 +27,18 @@ class WZ:
             return irc.PURPLE
 
     def __uv_rating(self, index):
-        return f"{irc.COLOR}{self.__uv_color(index)}{index}{irc.COLOR}"
+        return f"{irc.COLOR}{self.__uv_color(index)}{index}{irc.RESET}"
 
     def __high(self):
-        return f"{irc.COLOR}{irc.RED}↑{irc.COLOR}"
+        return f"{irc.COLOR}{irc.RED}↑{irc.RESET}"
 
     def __low(self):
-        return f"{irc.COLOR}{irc.ROYAL_BLUE}↓{irc.COLOR}"
+        return f"{irc.COLOR}{irc.ROYAL_BLUE}↓{irc.RESET}"
 
     def __both(self, temp):
       temp_f = float(temp)
       temp_c = (5.0 / 9.0) * (temp_f - 32.0)
-      return f"{temp_f:.2f}F/{temp_c:.2f}C"
+      return f"{int(temp_f):d}F/{temp_c:.2f}C"
 
     def _get(self, text):
 
@@ -75,11 +75,10 @@ class WZ:
             low = self.__both(fd['temperatureLow'])
             apparent_low = self.__both(fd['apparentTemperatureLow'])
             return (
-               f"\002{day}\002 "
-               f"{apparent_high}-{apparent_low} "
+               f"{irc.BOLD}{day}{irc.RESET} "
+               f"{self.__high()}{apparent_high} {self.__low()}{apparent_low} "
                f"{fd['summary']}"
             )
-            return r
         result += ' | '.join([f(x) for x in range(0, days)])
         return result
 
