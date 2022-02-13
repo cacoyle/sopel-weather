@@ -22,10 +22,11 @@ class WZ:
         self.darksky = darksky.DarkSky(darksky_url, darksky_key)
 
     def __short(self, url):
-      try
-        return shorturl.ShortenUrl(url)
-      except:
+        short_url = shorturl.ShortenUrl(url)
+        if short_url is not None
+            return short_url
         return url
+
 
     def __uv_color(self, index):
         try:

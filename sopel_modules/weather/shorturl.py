@@ -13,39 +13,36 @@ HEADERS_MOBILE = {'User-Agent':'Mozilla/5.0 (Linux; U; Android 4.0.2; en-us; Gal
 MAX_ATTEMPTS = 3
 VERSION = '0.0.4'
 
-def ShortenUrl(url, default='Any', login='', apikey=''):
-    api_service = ''
-    result=url
-    for attempt in range(MAX_ATTEMPTS):
-        if ((attempt==0 and default=='Any') or default=='tinyurl'):
-            url_data = {'url': url}
-            api_service = 'http://tinyurl.com/api-create.php'
-        elif (default=='is.gd'):
-            url_data = {'format':'simple', 'url': url}
-            api_service = 'http://is.gd/create.php'
-        elif (default=='bitly'):
-            url_data = {'format':'txt', 'login': login, 'apiKey': apikey, 'longUrl': url}
-            api_service = 'http://api.bit.ly/v3/shorten'
-        else:
-            url_data = {'format':'simple', 'url': url}
-            api_service = 'http://is.gd/create.php'
-        short_url = ProcessUrl(api_service, url_data).strip()
+SERVICES = {
+    'is.gd': {'host': 'http://is.gd/create.php', 'url': lambda url: {'format':'simple', 'url': url}},
+    'tinyurl': {'host': 'http://tinyurl.com/api-create.php', 'url': lambda url: {'url': url}}
+}
 
-        if (short_url[:4]=='http'):
-            result=short_url
-            break
+
+def ShortenUrl(url):
+    result = None
+    for _, service in SERVICES.items():
+      api_service = service['host']
+      url_data = service['url'](url)
+      try:
+        short_url = ProcessUrl(api_service, url_data, False).strip()
+      except (urllib.error.URLError, socket.timeout) as e:
+        try:
+          short_url = ProcessUrl(api_service, url_data, True).strip()
+        except (urllib.error.URLError, socket.timeout) as e:
+          continue
+
+      if (short_url[:4]=='http'):
+          result=short_url
+          break
     
     return result
 
-def ProcessUrl(shorten_url, url_data):
+def ProcessUrl(shorten_url, url_data, try_mobile_header=False):
     response = ''
-    try_mobile_header=False
     query_string = urllib.parse.urlencode( url_data )
     shorten_url = shorten_url + "?" + query_string
-
-    if (try_mobile_header==False):
-        req = urllib.request.Request(url=shorten_url, data=None, headers=HEADERS)
-    else:
-        req = urllib.request.Request(url=shorten_url, data=None, headers=HEADERS_MOBILE)
+    headers = HEADERS if try_mobile_header==False else HEADERS_MOBILE
+    req = urllib.request.Request(url=shorten_url, data=None, headers=headers)
     response = urllib.request.urlopen(req, timeout=5).read()
     return(response.decode('ascii'))
