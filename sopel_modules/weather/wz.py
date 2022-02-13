@@ -23,7 +23,7 @@ class WZ:
 
     def __short(self, url):
         short_url = shorturl.ShortenUrl(url)
-        if short_url is not None
+        if short_url is not None:
             return short_url
         return url
 
