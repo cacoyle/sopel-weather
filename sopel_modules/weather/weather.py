@@ -83,6 +83,12 @@ def weatherbot_forecast(bot, trigger):
 def weatherbot_hourly(bot, trigger):
     weather(bot, trigger, kind="hourly", hours=12)
 
+#@sopel.module.commands('wzr', 'wxh')
+#@sopel.module.example('.wzr 90210')
+#@sopel.module.example('.wzr Los Vegas, NV')
+#def weatherbot_hourly(bot, trigger):
+#    weather(bot, trigger, kind="rain")
+
 @sopel.module.commands('wzd', 'wxd')
 @sopel.module.example('.wzd 90210')
 @sopel.module.example('.wzd Los Vegas, NV')
