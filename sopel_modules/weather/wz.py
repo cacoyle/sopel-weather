@@ -2,6 +2,7 @@ from . import darksky
 from . import here
 from . import utils
 from . import irc
+from . import shorturl
 
 from functools import reduce
 
@@ -19,6 +20,12 @@ class WZ:
 
         self.here = here.Here(here_url, here_app_id, here_app_code)
         self.darksky = darksky.DarkSky(darksky_url, darksky_key)
+
+    def __short(self, url):
+      try
+        return shorturl.ShortenUrl(url)
+      except:
+        return url
 
     def __uv_color(self, index):
         try:
@@ -105,7 +112,7 @@ class WZ:
         )
         if 'alerts' in weather:
             result += " | Alerts: "
-            result += ', '.join([x['title'] + ' ' + x['uri'] for x in weather['alerts']])
+            result += ', '.join([x['title'] + ' ' + self.__short(x['uri']) for x in weather['alerts']])
         return result
 
     def get_hourly(self, city, state, weather, hours):
