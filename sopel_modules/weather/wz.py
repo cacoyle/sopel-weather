@@ -5,6 +5,7 @@ from . import irc
 from . import shorturl
 
 from functools import reduce
+from datetime import datetime, date
 
 class WZ:
     UV=[irc.PLAIN] + [irc.GREEN] * 2 + [irc.YELLOW] * 3 + [irc.ORANGE] * 2 + [irc.RED] * 3 + [irc.PURPLE]
@@ -134,25 +135,41 @@ class WZ:
         result += ' | '.join([h(hourly[x]) for x in range(0, hours)])
         return result
 
-    #def get_rain(self, city, state, weather):
-    #    result = f"{city}, {state} | {weather['hourly']['summary']} | "
-    #    hourly = weather['hourly']['data']
-    #    groups = [0, 20, 40, 50, 60, 70, 80, 90, 100, 101]
-    #    def get_group(percip):
-    #        for i in range(1, len(groups)-1):
-    #            if groups[i] >= percip:
-    #                return i - 1
-    #    import pdb; pdb.set_trace()
+    def get_rain(self, city, state, weather):
+        result = f"{city}, {state} | {weather['hourly']['summary']} | "
+        hourly = weather['hourly']['data']
+        groups = [0, 1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 101]
+        def get_group(percip):
+            for i in range(1, len(groups)):
+                if groups[i] > percip:
+                    return i - 1
 
-    #    def group(data, x):
-    #        percip = int(100 * x['precipProbability'])
-    #        g = get_group(percip)
-    #        print(f"{percip}% {g}")
-    #        if data[-1]['group'] == g:
-    #            pass
-    #        else:
-    #            data.append({'group': g})
-    #        return data
-    #    data = reduce(group, hourly[1:], [{'group': get_group((100 * hourly[0]['precipProbability']))}])
-    #    print(data)
-    #    return(result)
+        def group(data, x):
+            percip = int(100 * x['precipProbability'])
+            g = get_group(percip)
+            ptype = x.get('precipType', 'none')
+            if data[-1]['group'] == g and (data[-1]['type'] == ptype or ptype == 'none'):
+                pass
+            else:
+                data[-1]['end'] = x['time']
+                data.append({'group': g, 'start': x['time'], 'type': ptype})
+            return data
+        h0 = hourly[0]
+        data = reduce(group, hourly[1:], [{'group': get_group((100 * h0['precipProbability'])), 'start': h0['time'], 'type': h0.get('precipType', 'none')}])
+        last_day = None
+        last_type = None
+        results = []
+        for g in data:
+            percent = groups[g['group']]
+            time = datetime.fromtimestamp(g['start'])
+            hour = time.strftime("%-I%p")
+            day = time.day
+            if last_day != day:
+                results.append(f'{irc.BOLD}{time.strftime("%b %-d")}{irc.RESET}')
+                last_day = day
+            r = f"{hour} {percent}%"
+            if g['type'] != last_type and g['type'] != 'none':
+                last_type = g['type']
+                r = f"{irc.BOLD}{last_type}{irc.RESET} {r}"
+            results.append(r)
+        return(result + ' | '.join(results))
