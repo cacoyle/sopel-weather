@@ -114,7 +114,13 @@ class WZ:
         )
         if 'alerts' in weather:
             result += " | Alerts: "
-            result += ', '.join([x['title'] + ' ' + self.__short(x['uri']) for x in weather['alerts']])
+            uris = set()
+            alerts = []
+            for x in weather['alerts']:
+                if x['uri'] not in uris:
+                    alerts.append(x)
+                    uris.add(x['uri'])
+            result += ', '.join([x['title'] + ' ' + self.__short(x['uri']) for x in alerts])
         return result
 
     def get_hourly(self, city, state, weather, hours):
