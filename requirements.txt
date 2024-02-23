@@ -5,4 +5,4 @@ flake8
 pytest
 pytest-cov
 httmock
-geoip2==2.9.0
+geoip2
